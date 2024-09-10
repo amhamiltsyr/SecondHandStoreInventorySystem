@@ -1,5 +1,5 @@
-// src/components/Upload.tsx
 import React, { useState } from "react";
+import { Card, Form, Button } from "react-bootstrap";
 
 const Upload: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -8,60 +8,51 @@ const Upload: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    // Handle the form submission, e.g., send data to an API
     console.log({ title, description, imageUrl });
   };
 
   return (
-    <div className="card">
-      <div className="card-body">
-        <h5 className="card-title">Upload New Item</h5>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="title" className="form-label">
-              Title
-            </label>
-            <input
+    <Card>
+      <Card.Body>
+        <Card.Title>Upload New Item</Card.Title>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3" controlId="title">
+            <Form.Label>Title</Form.Label>
+            <Form.Control
               type="text"
-              className="form-control"
-              id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
             />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="description" className="form-label">
-              Description
-            </label>
-            <textarea
-              className="form-control"
-              id="description"
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="description">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              as="textarea"
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
-            ></textarea>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="imageUrl" className="form-label">
-              Image URL
-            </label>
-            <input
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="imageUrl">
+            <Form.Label>Image URL</Form.Label>
+            <Form.Control
               type="text"
-              className="form-control"
-              id="imageUrl"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               required
             />
-          </div>
-          <button type="submit" className="btn btn-primary">
+          </Form.Group>
+
+          <Button variant="primary" type="submit">
             Upload
-          </button>
-        </form>
-      </div>
-    </div>
+          </Button>
+        </Form>
+      </Card.Body>
+    </Card>
   );
 };
 

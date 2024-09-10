@@ -1,50 +1,43 @@
-// src/components/Marketplace.tsx
 import React from "react";
+import { Row, Col, Card, Button } from "react-bootstrap";
 
 const Marketplace: React.FC = () => {
-  // Replace with your data or fetch from API
   const items = [
     {
       id: 1,
       title: "Item 1",
       description: "Description 1",
-      imageUrl: "https://via.placeholder.com/150",
+      imageUrl: "https://placehold.co/400",
     },
     {
       id: 2,
       title: "Item 2",
       description: "Description 2",
-      imageUrl: "https://via.placeholder.com/150",
+      imageUrl: "https://placehold.co/400",
     },
     {
       id: 3,
       title: "Item 3",
       description: "Description 3",
-      imageUrl: "https://via.placeholder.com/150",
+      imageUrl: "https://placehold.co/400",
     },
   ];
 
   return (
-    <div className="row">
+    <Row>
       {items.map((item) => (
-        <div key={item.id} className="col-md-4">
-          <div className="card mb-4">
-            <img
-              src={item.imageUrl}
-              className="card-img-top"
-              alt={item.title}
-            />
-            <div className="card-body">
-              <h5 className="card-title">{item.title}</h5>
-              <p className="card-text">{item.description}</p>
-              <a href="#" className="btn btn-primary">
-                View Item
-              </a>
-            </div>
-          </div>
-        </div>
+        <Col key={item.id} md={4} className="mb-4">
+          <Card>
+            <Card.Img variant="top" src={item.imageUrl} />
+            <Card.Body>
+              <Card.Title>{item.title}</Card.Title>
+              <Card.Text>{item.description}</Card.Text>
+              <Button variant="primary">View Item</Button>
+            </Card.Body>
+          </Card>
+        </Col>
       ))}
-    </div>
+    </Row>
   );
 };
 
