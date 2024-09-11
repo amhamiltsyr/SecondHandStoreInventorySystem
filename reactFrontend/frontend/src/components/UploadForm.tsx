@@ -4,11 +4,11 @@ import { Card, Form, Button } from "react-bootstrap";
 const UploadForm: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [price, setPrice] = useState("");
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    console.log({ title, description, imageUrl });
+    console.log({ title, description, price });
   };
 
   return (
@@ -21,12 +21,26 @@ const UploadForm: React.FC = () => {
             <Form.Control type="file" />
           </Form.Group>
 
+          <Button variant="primary" className="analyze">
+            Analyze
+          </Button>
+
           <Form.Group className="mb-3" controlId="title">
             <Form.Label>Title</Form.Label>
             <Form.Control
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="price">
+            <Form.Label>Price</Form.Label>
+            <Form.Control
+              type="text"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
               required
             />
           </Form.Group>
@@ -38,16 +52,6 @@ const UploadForm: React.FC = () => {
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="imageUrl">
-            <Form.Label>Image URL</Form.Label>
-            <Form.Control
-              type="text"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
               required
             />
           </Form.Group>

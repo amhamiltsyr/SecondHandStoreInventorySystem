@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import "./Marketplace.css";
 import MarketCard from "./MarketCard";
+import LoadingCard from "./LoadingCard";
 
 const Marketplace: React.FC = () => {
+  const [isLoading, setLoading] = useState(true);
   const items = [
     {
       id: 1,
@@ -44,17 +46,23 @@ const Marketplace: React.FC = () => {
 
   return (
     <Row className="h">
-      {items.map((item) => (
-        <Col key={item.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
-          <MarketCard
-            id={item.id}
-            title={item.title}
-            description={item.description}
-            imageUrl={item.imageUrl}
-            price={item.price}
-          />
-        </Col>
-      ))}
+      {isLoading
+        ? Array.from({ length: 6 }).map((_, index) => (
+            <Col key={index} xs={12} sm={6} md={4} lg={3} className="mb-4">
+              <LoadingCard />
+            </Col>
+          ))
+        : items.map((item) => (
+            <Col key={item.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
+              <MarketCard
+                id={item.id}
+                title={item.title}
+                description={item.description}
+                imageUrl={item.imageUrl}
+                price={item.price}
+              />
+            </Col>
+          ))}
     </Row>
   );
 };
