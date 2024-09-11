@@ -75,8 +75,12 @@ WSGI_APPLICATION = 'secondHandStoreInventorySystem.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+	    'NAME': 'inventory_system_db',
+	    'USER': 'app_user',
+	    'PASSWORD': 'myPassword',
+	    'HOST': '10.1.75.101',
+	    'PORT': '3306',
     }
 }
 
