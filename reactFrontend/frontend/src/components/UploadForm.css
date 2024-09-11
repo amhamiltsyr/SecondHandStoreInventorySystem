@@ -1,0 +1,13 @@
+/* src/UploadPage.css */
+
+.upload-card {
+    max-width: 800px; /* Adjust the width as needed */
+    width: 100%;
+    padding: 20px;
+    margin: 20px; /* Optional: Add margin if needed */
+  }
+  
+  .upload-card .card-title {
+    margin-bottom: 20px;
+  }
+  

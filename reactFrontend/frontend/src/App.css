@@ -1,33 +1,16 @@
-/* src/App.css */
-
-/* Smooth transitions for resizing */
-body {
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+body, html, #root, .app-container {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
 }
 
 .app-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  background-color: var(--bs-body-bg); /* Ensure background color changes with theme */
-}
-
-.content-container {
-  width: 100%;
-  max-width: 1200px; /* Adjust this value as needed */
-  margin: 0 auto;
-  padding: 0 15px; /* Standard padding to ensure proper spacing */
-}
-
-.navbar {
-  width: 100%;
-  max-width: 1200px; /* Same as content container */
-  margin: 0 auto;
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-}
-
-h1 {
-  text-align: center;
-  transition: color 0.3s ease-in-out;
+  flex: 1;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 76px;
 }

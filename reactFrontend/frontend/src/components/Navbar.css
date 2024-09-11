@@ -1,3 +1,7 @@
-.navbar {
-    width: 100%;
-}
+.icon-white {
+    color: white;
+  }
+.btn-primary-outline {
+    background-color: grey;
+    border-color: #ccc;
+ }  

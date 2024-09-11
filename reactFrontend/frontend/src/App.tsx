@@ -4,17 +4,18 @@ import Marketplace from "./components/Marketplace";
 import Upload from "./components/Upload";
 import Navbar from "./components/Navbar";
 import { Container } from "react-bootstrap";
+import "./App.css";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Navbar />
-      <Container className="mt-4">
+      <div className="app-container">
         <Routes>
           <Route path="/" element={<Marketplace />} />
           <Route path="/upload" element={<Upload />} />
         </Routes>
-      </Container>
+      </div>
     </Router>
   );
 };
