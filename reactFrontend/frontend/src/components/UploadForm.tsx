@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Card, Form, Button } from "react-bootstrap";
+import "./UploadForm.css";
 
 const UploadForm: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -21,9 +22,7 @@ const UploadForm: React.FC = () => {
             <Form.Control type="file" />
           </Form.Group>
 
-          <Button variant="primary" className="analyze">
-            Analyze
-          </Button>
+          <Button className="btn-analyze mb-3">Analyze</Button>
 
           <Form.Group className="mb-3" controlId="title">
             <Form.Label>Title</Form.Label>

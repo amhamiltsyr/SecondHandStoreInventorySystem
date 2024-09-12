@@ -1,12 +1,15 @@
 /* src/Upload.css */
 
 .form {
-    max-width: 400px; /* Adjust the width as needed */
+    max-width: 500px; /* Adjust the width as needed */
     width: 100%; /* Ensure the form takes up 100% of the available space */
     margin: 0 auto; /* This will center the form horizontally */
     padding: 20px; /* Optional: Add padding for spacing within the form */
     border-radius: 8px; /* Optional: Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+    display: flex;
+  align-items: center;
+  justify-content: center;
   }
   
   .upload-container {

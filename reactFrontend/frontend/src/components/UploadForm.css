@@ -5,10 +5,28 @@
     width: 100%;
     padding: 20px;
     margin: 20px; /* Optional: Add margin if needed */
+    display: flex;
+  align-items: center;
+  justify-content: center;
   }
   
-  .upload-card .card-title {
+.upload-card .card-title {
     margin-bottom: 20px;
   }
   
- 
+.btn-analyze {
+  border-color: rgba(35,162,215,1);
+  background: rgb(153,6,201);
+  background: linear-gradient(27deg, rgba(208,53,235,1) 0%, rgba(35,162,215,1) 63%, rgba(0,78,255,1) 100%);   color: white; /* Text color */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition */
+
+  /* Center the button with a flex container */
+}
+
+.btn-analyze:hover {
+  transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+.btn-analyze:focus {
+  outline: none;
+}
