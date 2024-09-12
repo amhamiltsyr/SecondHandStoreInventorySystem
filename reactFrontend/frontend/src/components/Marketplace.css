@@ -1,0 +1,11 @@
+.market-card, .loading-card {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  
+  .market-card.loaded, .loading-card.loaded {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  

@@ -39,6 +39,7 @@ const Marketplace: React.FC = () => {
   useEffect(() => {
     loadMore(); // Initial load
   }, []);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {

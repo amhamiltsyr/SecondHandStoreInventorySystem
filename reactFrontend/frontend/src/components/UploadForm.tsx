@@ -22,7 +22,15 @@ const UploadForm: React.FC = () => {
             <Form.Control type="file" />
           </Form.Group>
 
-          <Button className="btn-analyze mb-3">Analyze</Button>
+          <Button
+            className="btn-analyze mb-3"
+            onClick={() => {
+              setTitle("test");
+              setPrice("$1");
+            }}
+          >
+            Analyze
+          </Button>
 
           <Form.Group className="mb-3" controlId="title">
             <Form.Label>Title</Form.Label>
