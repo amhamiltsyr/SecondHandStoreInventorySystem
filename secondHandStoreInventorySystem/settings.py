@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'upload',
 ]
 
 MIDDLEWARE = [
@@ -77,9 +78,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
 	    'NAME': 'inventory_system_db',
-	    'USER': 'app_user',
-	    'PASSWORD': 'myPassword',
-	    'HOST': '10.1.75.101',
+	    'USER': 'user',
+	    'PASSWORD': 'password',
+	    'HOST': 'localhost',
 	    'PORT': '3306',
     }
 }
