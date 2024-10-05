@@ -33,7 +33,7 @@ const Marketplace: React.FC = () => {
       }));
       setItems((prevItems) => [...prevItems, ...newItems]);
       setLoading(false);
-    }, 1500); // Simulate network delay
+    }, 200); // Simulate network delay
   };
 
   useEffect(() => {
