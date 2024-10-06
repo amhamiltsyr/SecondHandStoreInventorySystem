@@ -1,4 +1,5 @@
 node_modules
+.venv
 
 /.idea/
 /mlSubsystem/local_blip2-opt-2.7b/
