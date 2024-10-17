@@ -31,7 +31,7 @@ def get_next_twenty(request, idToStart):
 
 # Creates a new item, passed by url parameters
 def edit_listing(request, itemNumber,image, name, description, price):
-	item = InventoryItem.objects.get(itemNumber = itemNumber)
+	item = InventoryItem.objects.get(id = itemNumber)
 	item.image = image
 	item.name = name
 	item.description = description
@@ -45,7 +45,7 @@ def edit_listing(request, itemNumber,image, name, description, price):
 
 # Edits the provided item number to have archieved=True
 def delete_listing(request, itemNumber):
-	item = InventoryItem.objects.get(itemNumber=1)
+	item = InventoryItem.objects.get(id = itemNumber)
 	item.archieved = True
 	item.save() 
 	return HttpResponse('Listing archived')

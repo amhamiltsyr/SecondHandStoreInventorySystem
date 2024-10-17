@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Row, Col } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Row, Col, Pagination } from "react-bootstrap";
 import "./Marketplace.css";
 import MarketCard from "./MarketCard";
-import LoadingCard from "./LoadingCard";
 
 const Marketplace: React.FC = () => {
-  const [isLoading, setLoading] = useState(true);
   const [items, setItems] = useState<
     Array<{
       id: number;
@@ -15,57 +13,51 @@ const Marketplace: React.FC = () => {
       price: number;
     }>
   >([]);
-  const [page, setPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0); // Track total number of items
 
-  const loader = useRef(null);
+  const itemsPerPage = 20;
 
-  const loadMore = () => {
-    setLoading(true);
-    setTimeout(() => {
-      const newItems = Array.from({ length: 6 }).map((_, index) => ({
-        id: index + items.length + 1,
-        title: `Item ${index + items.length + 1}`,
-        description: `Description of item ${index + items.length + 1}`,
-        imageUrl: `https://via.placeholder.com/300x400?text=Item+${
-          index + items.length + 1
-        }`,
-        price: Math.floor(Math.random() * 100) + 1,
-      }));
-      setItems((prevItems) => [...prevItems, ...newItems]);
-      setLoading(false);
-    }, 200); // Simulate network delay
+  // Fetch items based on the current page
+  const fetchItems = (page: number) => {
+    const startItemId = (page - 1) * itemsPerPage;
+
+    fetch(`http://127.0.0.1:8000/upload/getNextTwenty/${startItemId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const parsedData = JSON.parse(data);
+
+        const newItems = parsedData.map((item: any) => ({
+          id: item.pk,
+          title: item.fields.name,
+          description: item.fields.description,
+          imageUrl: `http://127.0.0.1:8000${item.fields.image}`,
+          price: item.fields.price,
+        }));
+
+        // Update total items count
+        setTotalItems((prevTotal) => prevTotal + newItems.length);
+
+        // Add new items
+        setItems(newItems);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   };
 
+  // Fetch items when currentPage changes
   useEffect(() => {
-    loadMore(); // Initial load
-  }, []);
+    fetchItems(currentPage);
+  }, [currentPage]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setPage((prevPage) => prevPage + 1);
-        }
-      },
-      { threshold: 1 }
-    );
+  // Handle page change
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
-    if (loader.current) {
-      observer.observe(loader.current);
-    }
-
-    return () => {
-      if (loader.current) {
-        observer.unobserve(loader.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (page > 1) {
-      loadMore();
-    }
-  }, [page]);
+  // Calculate total pages based on total items received and items per page
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   return (
     <>
@@ -81,22 +73,36 @@ const Marketplace: React.FC = () => {
             />
           </Col>
         ))}
-        {isLoading &&
-          Array.from({ length: 6 }).map((_, index) => (
-            <Col
-              key={`loading-${index}`}
-              xs={12}
-              sm={6}
-              md={4}
-              lg={3}
-              className="mb-4"
-            >
-              <LoadingCard />
-            </Col>
-          ))}
       </Row>
-      <div ref={loader} style={{ height: "1px" }}></div>{" "}
-      {/* Invisible div for IntersectionObserver */}
+
+      {/* Pagination controls */}
+      <Pagination className="d-flex justify-content-center mt-4">
+        <Pagination.First
+          onClick={() => handlePageChange(1)}
+          disabled={currentPage === 1}
+        />
+        <Pagination.Prev
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        />
+        {[...Array(totalPages || 1)].map((_, index) => (
+          <Pagination.Item
+            key={index + 1}
+            active={index + 1 === currentPage}
+            onClick={() => handlePageChange(index + 1)}
+          >
+            {index + 1}
+          </Pagination.Item>
+        ))}
+        <Pagination.Next
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        />
+        <Pagination.Last
+          onClick={() => handlePageChange(totalPages)}
+          disabled={currentPage === totalPages}
+        />
+      </Pagination>
     </>
   );
 };
