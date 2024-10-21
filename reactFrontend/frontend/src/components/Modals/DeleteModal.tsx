@@ -24,7 +24,6 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
     fetch(`http://127.0.0.1:8000/upload/deleteListing/${item.id}`)
       .then(() => {
         handleClose(); // Close modal on successful save
-        window.location.reload(); // Reload the page
       })
       .catch((error) => {
         setShowError(true);

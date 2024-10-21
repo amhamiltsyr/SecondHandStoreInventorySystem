@@ -26,7 +26,6 @@ const EditModal: React.FC<EditModalProps> = ({ show, handleClose, item }) => {
     )
       .then(() => {
         handleClose(); // Close modal on successful save
-        window.location.reload(); // Reload the page
       })
       .catch((error) => {
         setShowError(true);

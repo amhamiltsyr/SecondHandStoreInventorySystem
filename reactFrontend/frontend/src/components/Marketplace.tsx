@@ -7,7 +7,7 @@ import {
   Dropdown,
 } from "react-bootstrap";
 import "./Marketplace.css";
-import MarketCard from "./MarketCard";
+import MarketCard from "./Cards/MarketCard";
 
 const Marketplace: React.FC = () => {
   const [items, setItems] = useState<
@@ -20,29 +20,22 @@ const Marketplace: React.FC = () => {
     }>
   >([]);
 
-  const changePageSize = (newSize: number) => {
-    setCurrentPage(Math.round(startItemID / newSize));
-    setItemsPerPage(newSize);
-    fetchItems(newSize);
-  };
-
   const getInitialItemsPerPage = () => {
     const savedItemsPerPage = localStorage.getItem("itemsPerPage");
     return savedItemsPerPage ? parseInt(savedItemsPerPage) : 8;
   };
-  const [itemsPerPage, setItemsPerPage] = useState(getInitialItemsPerPage);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [startItemID, setStartItemID] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(getInitialItemsPerPage);
   const [totalItems, setTotalItems] = useState(0); // Track total number of items
 
-  // Fetch items based on the current page
-  const fetchItems = (itemsPerPageFetch: number, page?: number) => {
-    if (page) {
-      setStartItemID((page - 1) * itemsPerPageFetch);
-    } else {
-      page = 0;
-      setCurrentPage(Math.floor(startItemID / itemsPerPageFetch));
-    }
+  const refetchItems = () => {
+    fetchItems(currentPage, itemsPerPage);
+  };
+
+  // Fetch items based on the current page and page size
+  const fetchItems = (page: number, itemsPerPageFetch: number) => {
+    const startItemID = (page - 1) * itemsPerPageFetch;
 
     fetch(
       `http://127.0.0.1:8000/upload/getNext/${itemsPerPageFetch}/${startItemID}`
@@ -51,6 +44,7 @@ const Marketplace: React.FC = () => {
       .then((data) => {
         const parsedData = JSON.parse(data.items);
         const totalCount = data.total_count;
+
         const newItems = parsedData.map((item: any) => ({
           id: item.pk,
           title: item.fields.name,
@@ -59,22 +53,20 @@ const Marketplace: React.FC = () => {
           price: item.fields.price,
         }));
 
-        // Update total items count
-        setTotalItems(totalCount);
-
-        // Add new items
         setItems(newItems);
+        setTotalItems(totalCount);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   };
 
-  // Fetch items when currentPage changes
+  // Fetch items when the currentPage or itemsPerPage changes
   useEffect(() => {
-    fetchItems(itemsPerPage, currentPage);
-  }, [currentPage]);
+    fetchItems(currentPage, itemsPerPage);
+  }, [currentPage, itemsPerPage]);
 
+  // Save itemsPerPage in localStorage when it changes
   useEffect(() => {
     localStorage.setItem("itemsPerPage", itemsPerPage.toString());
   }, [itemsPerPage]);
@@ -84,9 +76,15 @@ const Marketplace: React.FC = () => {
     setCurrentPage(pageNumber);
   };
 
-  // Calculate total pages based on total items received and items per page
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  // Change page size while keeping the current startItemID on the same page
+  const changePageSize = (newSize: number) => {
+    const currentFirstItemIndex = (currentPage - 1) * itemsPerPage;
+    const newPage = Math.floor(currentFirstItemIndex / newSize) + 1; // Calculate new page
+    setItemsPerPage(newSize);
+    setCurrentPage(newPage);
+  };
 
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
   return (
     <>
       <div className="d-flex align-items-center justify-content-between controls">
@@ -134,6 +132,7 @@ const Marketplace: React.FC = () => {
               description={item.description}
               imageUrl={item.imageUrl}
               price={item.price}
+              handleChange={refetchItems}
             />
           </Col>
         ))}

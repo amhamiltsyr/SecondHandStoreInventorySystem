@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Badge, Dropdown } from "react-bootstrap";
-import EditModal from "./Modals/EditModal";
-import DeleteModal from "./Modals/DeleteModal";
+import EditModal from "../Modals/EditModal";
+import DeleteModal from "../Modals/DeleteModal";
 import "./MarketCard.css";
+import ItemModal from "../Modals/ItemModal";
 
 interface MarketCardProps {
   id: number;
@@ -10,6 +11,7 @@ interface MarketCardProps {
   description: string;
   imageUrl: string;
   price: number;
+  handleChange: () => void;
 }
 
 const MarketCard: React.FC<MarketCardProps> = ({
@@ -18,16 +20,21 @@ const MarketCard: React.FC<MarketCardProps> = ({
   description,
   imageUrl,
   price,
+  handleChange,
 }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showItemModal, setShowItemModal] = useState(false);
   const [theme, setTheme] = useState("light");
 
   const handleEdit = () => setShowEditModal(true);
   const handleDelete = () => setShowDeleteModal(true);
+  const handleView = () => setShowItemModal(true);
+  const handleItemClose = () => setShowItemModal(false);
   const handleClose = () => {
     setShowEditModal(false);
     setShowDeleteModal(false);
+    handleChange();
   };
 
   useEffect(() => {
@@ -35,7 +42,6 @@ const MarketCard: React.FC<MarketCardProps> = ({
       document.documentElement.getAttribute("data-bs-theme") || "light";
     setTheme(currentTheme);
 
-    // Optional: Listen for theme changes if dynamically updated elsewhere
     const observer = new MutationObserver(() => {
       const updatedTheme =
         document.documentElement.getAttribute("data-bs-theme") || "light";
@@ -51,6 +57,8 @@ const MarketCard: React.FC<MarketCardProps> = ({
       observer.disconnect();
     };
   }, []);
+
+  imageUrl = "https://picsum.photos/300/400";
 
   return (
     <>
@@ -71,7 +79,9 @@ const MarketCard: React.FC<MarketCardProps> = ({
           </Card.Text>
           <Card.Text>{description}</Card.Text>
           <div className="d-flex">
-            <Button variant="primary">View Item</Button>
+            <Button variant="primary" onClick={handleView}>
+              View Item
+            </Button>
             <Dropdown className="rightAlign">
               <Dropdown.Toggle
                 as={Button}
@@ -91,6 +101,12 @@ const MarketCard: React.FC<MarketCardProps> = ({
           </div>
         </Card.Body>
       </Card>
+
+      <ItemModal
+        show={showItemModal}
+        handleClose={handleItemClose}
+        item={{ id, title, description, imageUrl, price }}
+      />
 
       <EditModal
         show={showEditModal}
