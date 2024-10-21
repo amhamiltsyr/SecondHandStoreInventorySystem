@@ -26,11 +26,9 @@ def create_listing(request, image, name, description, price):
 def get_next_twenty(request, idToStart):
 	all_items = InventoryItem.objects.all()[idToStart:]
 	to_return = []
-	items_added = 0
 	for item in all_items:
-		if not item.archieved and items_added <= 20:
-			items_added = items_added + 1
-			to_return.add(item)
+		if not item.archieved and len(to_return) < 20:
+			to_return.append(item)
 	to_json = serializers.serialize('json', to_return)
 	return JsonResponse(to_json, safe=False)
 
