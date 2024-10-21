@@ -23,15 +23,20 @@ def create_listing(request, image, name, description, price):
 
 
 # Gets the next 20 items in the inventory database
-def get_next_twenty(request, idToStart):
-	all_items = InventoryItem.objects.all()[idToStart:idToStart + 20]
-	to_json = serializers.serialize('json', all_items)
-	return JsonResponse(to_json, safe=False)
+def get_next(request,itemsToSend, idToStart):
+    all_items = InventoryItem.objects.filter(archieved=False)[idToStart:]
+    to_return = all_items[:itemsToSend]
+    to_json = serializers.serialize('json', to_return)
+    total_count = InventoryItem.objects.filter(archieved=False).count()
+    return JsonResponse({
+        'items': to_json,
+        'total_count': total_count
+    })
 
 
 # Creates a new item, passed by url parameters
 def edit_listing(request, itemNumber,image, name, description, price):
-	item = InventoryItem.objects.get(itemNumber = itemNumber)
+	item = InventoryItem.objects.get(id = itemNumber)
 	item.image = image
 	item.name = name
 	item.description = description
@@ -45,7 +50,7 @@ def edit_listing(request, itemNumber,image, name, description, price):
 
 # Edits the provided item number to have archieved=True
 def delete_listing(request, itemNumber):
-	item = InventoryItem.objects.get(itemNumber=1)
+	item = InventoryItem.objects.get(id = itemNumber)
 	item.archieved = True
 	item.save() 
 	return HttpResponse('Listing archived')

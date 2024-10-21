@@ -8,6 +8,14 @@
     position: relative; /* Allows absolute positioning of the image */
     overflow: hidden; /* Hides any overflowing content */
   }
+  .item-id-bubble {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   
   .card-img {
     position: absolute;
@@ -18,3 +26,10 @@
     object-fit: cover; /* Ensures the image covers the area without distortion */
   }
   
+.no-caret{
+  background-color: transparent;
+}
+
+  .no-caret::after {
+    display: none !important;
+  }

@@ -1,11 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Row, Col } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import {
+  Row,
+  Col,
+  Pagination,
+  DropdownButton,
+  Dropdown,
+} from "react-bootstrap";
 import "./Marketplace.css";
-import MarketCard from "./MarketCard";
-import LoadingCard from "./LoadingCard";
+import MarketCard from "./Cards/MarketCard";
 
 const Marketplace: React.FC = () => {
-  const [isLoading, setLoading] = useState(true);
   const [items, setItems] = useState<
     Array<{
       id: number;
@@ -15,60 +19,110 @@ const Marketplace: React.FC = () => {
       price: number;
     }>
   >([]);
-  const [page, setPage] = useState(1);
 
-  const loader = useRef(null);
-
-  const loadMore = () => {
-    setLoading(true);
-    setTimeout(() => {
-      const newItems = Array.from({ length: 6 }).map((_, index) => ({
-        id: index + items.length + 1,
-        title: `Item ${index + items.length + 1}`,
-        description: `Description of item ${index + items.length + 1}`,
-        imageUrl: `https://via.placeholder.com/300x400?text=Item+${
-          index + items.length + 1
-        }`,
-        price: Math.floor(Math.random() * 100) + 1,
-      }));
-      setItems((prevItems) => [...prevItems, ...newItems]);
-      setLoading(false);
-    }, 200); // Simulate network delay
+  const getInitialItemsPerPage = () => {
+    const savedItemsPerPage = localStorage.getItem("itemsPerPage");
+    return savedItemsPerPage ? parseInt(savedItemsPerPage) : 8;
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(getInitialItemsPerPage);
+  const [totalItems, setTotalItems] = useState(0); // Track total number of items
+
+  const refetchItems = () => {
+    fetchItems(currentPage, itemsPerPage);
+  };
+
+  // Fetch items based on the current page and page size
+  const fetchItems = (page: number, itemsPerPageFetch: number) => {
+    const startItemID = (page - 1) * itemsPerPageFetch;
+
+    fetch(
+      `http://127.0.0.1:8000/upload/getNext/${itemsPerPageFetch}/${startItemID}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const parsedData = JSON.parse(data.items);
+        const totalCount = data.total_count;
+
+        const newItems = parsedData.map((item: any) => ({
+          id: item.pk,
+          title: item.fields.name,
+          description: item.fields.description,
+          imageUrl: `http://127.0.0.1:8000${item.fields.image}`,
+          price: item.fields.price,
+        }));
+
+        setItems(newItems);
+        setTotalItems(totalCount);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+
+  // Fetch items when the currentPage or itemsPerPage changes
   useEffect(() => {
-    loadMore(); // Initial load
-  }, []);
+    fetchItems(currentPage, itemsPerPage);
+  }, [currentPage, itemsPerPage]);
 
+  // Save itemsPerPage in localStorage when it changes
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setPage((prevPage) => prevPage + 1);
-        }
-      },
-      { threshold: 1 }
-    );
+    localStorage.setItem("itemsPerPage", itemsPerPage.toString());
+  }, [itemsPerPage]);
 
-    if (loader.current) {
-      observer.observe(loader.current);
-    }
+  // Handle page change
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
-    return () => {
-      if (loader.current) {
-        observer.unobserve(loader.current);
-      }
-    };
-  }, []);
+  // Change page size while keeping the current startItemID on the same page
+  const changePageSize = (newSize: number) => {
+    const currentFirstItemIndex = (currentPage - 1) * itemsPerPage;
+    const newPage = Math.floor(currentFirstItemIndex / newSize) + 1; // Calculate new page
+    setItemsPerPage(newSize);
+    setCurrentPage(newPage);
+  };
 
-  useEffect(() => {
-    if (page > 1) {
-      loadMore();
-    }
-  }, [page]);
-
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
   return (
     <>
+      <div className="d-flex align-items-center justify-content-between controls">
+        <Pagination className="controls">
+          <Pagination.Prev
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          />
+          <Pagination.Next
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          />
+        </Pagination>
+        <div>
+          Current Page: <strong>{currentPage}</strong>
+        </div>
+        <DropdownButton
+          variant="secondary"
+          title={`Items Per Page: ${itemsPerPage}`}
+        >
+          <Dropdown.Item onClick={() => changePageSize(4)}>
+            Items Per Page: 4
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => changePageSize(8)}>
+            Items Per Page: 8
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => changePageSize(12)}>
+            Items Per Page: 12
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => changePageSize(16)}>
+            Items Per Page: 16
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => changePageSize(20)}>
+            Items Per Page: 20
+          </Dropdown.Item>
+        </DropdownButton>
+      </div>
+      <hr />
       <Row className="h">
         {items.map((item) => (
           <Col key={item.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
@@ -78,25 +132,40 @@ const Marketplace: React.FC = () => {
               description={item.description}
               imageUrl={item.imageUrl}
               price={item.price}
+              handleChange={refetchItems}
             />
           </Col>
         ))}
-        {isLoading &&
-          Array.from({ length: 6 }).map((_, index) => (
-            <Col
-              key={`loading-${index}`}
-              xs={12}
-              sm={6}
-              md={4}
-              lg={3}
-              className="mb-4"
-            >
-              <LoadingCard />
-            </Col>
-          ))}
       </Row>
-      <div ref={loader} style={{ height: "1px" }}></div>{" "}
-      {/* Invisible div for IntersectionObserver */}
+
+      {/* Pagination controls */}
+      <Pagination className="d-flex justify-content-center mt-4">
+        <Pagination.First
+          onClick={() => handlePageChange(1)}
+          disabled={currentPage === 1}
+        />
+        <Pagination.Prev
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        />
+        {[...Array(totalPages || 1)].map((_, index) => (
+          <Pagination.Item
+            key={index + 1}
+            active={index + 1 === currentPage}
+            onClick={() => handlePageChange(index + 1)}
+          >
+            {index + 1}
+          </Pagination.Item>
+        ))}
+        <Pagination.Next
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        />
+        <Pagination.Last
+          onClick={() => handlePageChange(totalPages)}
+          disabled={currentPage === totalPages}
+        />
+      </Pagination>
     </>
   );
 };
