@@ -43,15 +43,17 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
         ) : (
           <></>
         )}
-        <div className="mb-3">
-          <Button variant="secondary" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={handleSave}>
-            Delete
-          </Button>
-        </div>
+        Are you sure you want to remove item <strong>{item.title}</strong>?
       </Modal.Body>
+
+      <Modal.Footer>
+        <Button variant="secondary" className="button" onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button variant="danger" className="button" onClick={handleSave}>
+          Delete
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 };

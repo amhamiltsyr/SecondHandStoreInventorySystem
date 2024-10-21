@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Pagination } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Pagination,
+  DropdownButton,
+  Dropdown,
+} from "react-bootstrap";
 import "./Marketplace.css";
 import MarketCard from "./MarketCard";
 
@@ -13,20 +19,38 @@ const Marketplace: React.FC = () => {
       price: number;
     }>
   >([]);
+
+  const changePageSize = (newSize: number) => {
+    setCurrentPage(Math.round(startItemID / newSize));
+    setItemsPerPage(newSize);
+    fetchItems(newSize);
+  };
+
+  const getInitialItemsPerPage = () => {
+    const savedItemsPerPage = localStorage.getItem("itemsPerPage");
+    return savedItemsPerPage ? parseInt(savedItemsPerPage) : 8;
+  };
+  const [itemsPerPage, setItemsPerPage] = useState(getInitialItemsPerPage);
   const [currentPage, setCurrentPage] = useState(1);
+  const [startItemID, setStartItemID] = useState(0);
   const [totalItems, setTotalItems] = useState(0); // Track total number of items
 
-  const itemsPerPage = 20;
-
   // Fetch items based on the current page
-  const fetchItems = (page: number) => {
-    const startItemId = (page - 1) * itemsPerPage;
+  const fetchItems = (itemsPerPageFetch: number, page?: number) => {
+    if (page) {
+      setStartItemID((page - 1) * itemsPerPageFetch);
+    } else {
+      page = 0;
+      setCurrentPage(Math.floor(startItemID / itemsPerPageFetch));
+    }
 
-    fetch(`http://127.0.0.1:8000/upload/getNextTwenty/${startItemId}`)
+    fetch(
+      `http://127.0.0.1:8000/upload/getNext/${itemsPerPageFetch}/${startItemID}`
+    )
       .then((response) => response.json())
       .then((data) => {
-        const parsedData = JSON.parse(data);
-
+        const parsedData = JSON.parse(data.items);
+        const totalCount = data.total_count;
         const newItems = parsedData.map((item: any) => ({
           id: item.pk,
           title: item.fields.name,
@@ -36,7 +60,7 @@ const Marketplace: React.FC = () => {
         }));
 
         // Update total items count
-        setTotalItems((prevTotal) => prevTotal + newItems.length);
+        setTotalItems(totalCount);
 
         // Add new items
         setItems(newItems);
@@ -48,8 +72,12 @@ const Marketplace: React.FC = () => {
 
   // Fetch items when currentPage changes
   useEffect(() => {
-    fetchItems(currentPage);
+    fetchItems(itemsPerPage, currentPage);
   }, [currentPage]);
+
+  useEffect(() => {
+    localStorage.setItem("itemsPerPage", itemsPerPage.toString());
+  }, [itemsPerPage]);
 
   // Handle page change
   const handlePageChange = (pageNumber: number) => {
@@ -61,6 +89,42 @@ const Marketplace: React.FC = () => {
 
   return (
     <>
+      <div className="d-flex align-items-center justify-content-between controls">
+        <Pagination className="controls">
+          <Pagination.Prev
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          />
+          <Pagination.Next
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          />
+        </Pagination>
+        <div>
+          Current Page: <strong>{currentPage}</strong>
+        </div>
+        <DropdownButton
+          variant="secondary"
+          title={`Items Per Page: ${itemsPerPage}`}
+        >
+          <Dropdown.Item onClick={() => changePageSize(4)}>
+            Items Per Page: 4
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => changePageSize(8)}>
+            Items Per Page: 8
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => changePageSize(12)}>
+            Items Per Page: 12
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => changePageSize(16)}>
+            Items Per Page: 16
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => changePageSize(20)}>
+            Items Per Page: 20
+          </Dropdown.Item>
+        </DropdownButton>
+      </div>
+      <hr />
       <Row className="h">
         {items.map((item) => (
           <Col key={item.id} xs={12} sm={6} md={4} lg={3} className="mb-4">

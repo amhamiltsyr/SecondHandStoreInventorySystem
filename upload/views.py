@@ -23,14 +23,15 @@ def create_listing(request, image, name, description, price):
 
 
 # Gets the next 20 items in the inventory database
-def get_next_twenty(request, idToStart):
-	all_items = InventoryItem.objects.all()[idToStart:]
-	to_return = []
-	for item in all_items:
-		if not item.archieved and len(to_return) < 20:
-			to_return.append(item)
-	to_json = serializers.serialize('json', to_return)
-	return JsonResponse(to_json, safe=False)
+def get_next(request,itemsToSend, idToStart):
+    all_items = InventoryItem.objects.filter(archieved=False)[idToStart:]
+    to_return = all_items[:itemsToSend]
+    to_json = serializers.serialize('json', to_return)
+    total_count = InventoryItem.objects.filter(archieved=False).count()
+    return JsonResponse({
+        'items': to_json,
+        'total_count': total_count
+    })
 
 
 # Creates a new item, passed by url parameters

@@ -8,3 +8,10 @@
     opacity: 1;
     transform: translateY(0);
   }
+
+  .controls{
+    margin-bottom: 0;
+    margin-left: 2%;
+    margin-right: 2%;
+
+  }
