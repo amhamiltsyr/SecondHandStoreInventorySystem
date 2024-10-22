@@ -32,13 +32,7 @@ const AppNavbar: React.FC = () => {
       <Container>
         <LinkContainer to="/">
           <Navbar.Brand>
-            <img
-              src="https://placehold.co/30"
-              width="30"
-              height="30"
-              className="d-inline-block align-top"
-              alt="Logo"
-            />
+            <i className="bi bi-shop-window" style={{ marginRight: "5px" }}></i>
             Marketplace
           </Navbar.Brand>
         </LinkContainer>

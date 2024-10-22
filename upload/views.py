@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models import InventoryItem
 from django.http import JsonResponse
 from django.core import serializers
+from django.db.models import Q
 
 
 itemNumberOn = 1 # tracks what item number the database will assign the next listing created
@@ -23,11 +24,16 @@ def create_listing(request, image, name, description, price):
 
 
 # Gets the next 20 items in the inventory database
-def get_next(request,itemsToSend, idToStart):
-    all_items = InventoryItem.objects.filter(archieved=False)[idToStart:]
-    to_return = all_items[:itemsToSend]
+def get_next(request,itemsToSend, idToStart, searchTerm=""):
+    all_items = InventoryItem.objects.filter(archieved=False)
+
+    if searchTerm:
+        all_items = all_items.filter(
+            Q(name__icontains=searchTerm) | Q(description__icontains=searchTerm)
+        )
+    to_return = all_items[idToStart:idToStart + itemsToSend]
     to_json = serializers.serialize('json', to_return)
-    total_count = InventoryItem.objects.filter(archieved=False).count()
+    total_count = all_items.count()
     return JsonResponse({
         'items': to_json,
         'total_count': total_count

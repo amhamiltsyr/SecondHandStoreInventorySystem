@@ -5,6 +5,9 @@ import {
   Pagination,
   DropdownButton,
   Dropdown,
+  InputGroup,
+  Form,
+  Button,
 } from "react-bootstrap";
 import "./Marketplace.css";
 import MarketCard from "./Cards/MarketCard";
@@ -28,7 +31,8 @@ const Marketplace: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(getInitialItemsPerPage);
-  const [totalItems, setTotalItems] = useState(0); // Track total number of items
+  const [searchTerm, setSearchTerm] = useState("");
+  const [totalPages, setTotalPages] = useState(0);
 
   const refetchItems = () => {
     fetchItems(currentPage, itemsPerPage);
@@ -40,7 +44,7 @@ const Marketplace: React.FC = () => {
     const startItemID = (page - 1) * itemsPerPageFetch;
 
     fetch(
-      `http://127.0.0.1:8000/upload/getNext/${itemsPerPageFetch}/${startItemID}`
+      `http://127.0.0.1:8000/upload/getNext/${itemsPerPageFetch}/${startItemID}/${searchTerm}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -56,7 +60,7 @@ const Marketplace: React.FC = () => {
         }));
 
         setItems(newItems);
-        setTotalItems(totalCount);
+        setTotalPages(Math.ceil(totalCount / itemsPerPageFetch));
         setLoading(false);
       })
       .catch((error) => {
@@ -87,46 +91,61 @@ const Marketplace: React.FC = () => {
     setCurrentPage(newPage);
   };
 
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
   return (
     <>
       <div className="d-flex align-items-center justify-content-between controls">
-        <Pagination className="controls">
-          <Pagination.Prev
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          />
-          <Pagination.Next
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          />
-        </Pagination>
-        <div>
+        <div className="d-none d-md-block">
           Current Page: <strong>{currentPage}</strong>
         </div>
-        <DropdownButton
-          variant="secondary"
-          title={`Items Per Page: ${itemsPerPage}`}
-        >
-          <Dropdown.Item onClick={() => changePageSize(4)}>
-            Items Per Page: 4
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => changePageSize(8)}>
-            Items Per Page: 8
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => changePageSize(12)}>
-            Items Per Page: 12
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => changePageSize(16)}>
-            Items Per Page: 16
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => changePageSize(20)}>
-            Items Per Page: 20
-          </Dropdown.Item>
-        </DropdownButton>
+        <div className="d-flex">
+          <InputGroup style={{ marginRight: "20px" }}>
+            <InputGroup.Text id="basic-addon1">
+              <i className="bi bi-search"></i>
+            </InputGroup.Text>
+            <Form.Control
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  fetchItems(1, itemsPerPage); // Trigger fetch when Enter is pressed
+                }
+              }}
+            />
+            <Button
+              variant="primary"
+              onClick={() => {
+                setCurrentPage(1); // Reset page
+                fetchItems(1, itemsPerPage); // Trigger search fetch
+              }}
+            >
+              Search
+            </Button>
+          </InputGroup>
+          <DropdownButton variant="secondary" title={`Items: ${itemsPerPage}`}>
+            <Dropdown.Item onClick={() => changePageSize(4)}>
+              Items Per Page: 4
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => changePageSize(8)}>
+              Items Per Page: 8
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => changePageSize(12)}>
+              Items Per Page: 12
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => changePageSize(16)}>
+              Items Per Page: 16
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => changePageSize(20)}>
+              Items Per Page: 20
+            </Dropdown.Item>
+          </DropdownButton>
+        </div>
       </div>
       <hr />
-      <Row className="h">
+      <Row
+        style={{ marginBottom: "50px" }}
+        className="justify-content-center h"
+      >
         {items.map((item) => (
           <Col key={item.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
             {loading ? (
@@ -145,8 +164,7 @@ const Marketplace: React.FC = () => {
         ))}
       </Row>
 
-      {/* Pagination controls */}
-      <Pagination className="d-flex justify-content-center mt-4">
+      <Pagination className="d-flex fixed-bottom justify-content-center mt-4">
         <Pagination.First
           onClick={() => handlePageChange(1)}
           disabled={currentPage === 1}
