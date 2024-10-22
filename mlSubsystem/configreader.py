@@ -1,8 +1,5 @@
 import configparser
 
-from transformers.models.siglip.convert_siglip_to_hf import model_name_to_checkpoint
-
-
 class MLConfig:
     def __init__(self, port_number, model_directory_path, ip_address, model_name):
         self.port_number = port_number
@@ -24,7 +21,7 @@ def read_config(file_path):
     return MLConfig(port_number, model_directory_path, ip_address, model_name)
 
 # Example usage
-mlConfig = read_config('ml.cfg')
+mlConfig = read_config('../ml.cfg')
 print(f"Port Number: {mlConfig.port_number}")
 print(f"Model Directory Path: {mlConfig.model_directory_path}")
 print(f"IP Address: {mlConfig.ip_address}")

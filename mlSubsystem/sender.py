@@ -3,14 +3,12 @@ import socket
 import pickle
 import argparse
 import sys
-
-from mlSubsystem import configreader
-
+import configreader
 
 def getconfig():
     # region Read Configuration
     try:
-        mlConfig = configreader.read_config('ml.cfg')
+        mlConfig = configreader.read_config('../ml.cfg')
         host = mlConfig.ip_address
         port = mlConfig.port_number
         return host, port
@@ -23,6 +21,8 @@ def getconfig():
 def load_image(image_path):
     try:
         image = Image.open(image_path)
+        img_metadata = f"Image: {image.format}, {image.size}, {image.mode}"
+        print(f"Loaded:\n\t{img_metadata}")
         return image
     except Exception as e:
         print(f"Error: {str(e)}")
@@ -35,11 +35,16 @@ def send_message(image, message):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         try:
             s.connect((host, port))
-
             image_prompt = (image, message)
 
             serialized_message = pickle.dumps(image_prompt)
+            # dump to tempPickle to debug
+            with open("tempPickle", "wb") as f:
+                f.write(serialized_message)
+
             s.sendall(serialized_message)
+            s.shutdown(socket.SHUT_WR)
+
             # Receive the status code
             data = s.recv(1024)
             response = pickle.loads(data)

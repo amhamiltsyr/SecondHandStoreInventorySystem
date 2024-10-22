@@ -1,3 +1,4 @@
+import argparse
 import socket
 import pickle
 import sys
@@ -13,8 +14,11 @@ processor = None
 model = None
 device = None
 
+real_run = False
 
 def process_image(image: Image, prompt):
+    if not real_run:
+        return "Dummy Generated Text"
     global processor, model, device
     image = image.convert('RGB')
     inputs = processor(image, text=prompt, return_tensors="pt").to(device, torch.float16)
@@ -32,7 +36,12 @@ def wait_for_messages():
             while True:
                 conn, addr = s.accept()
                 with conn:
-                    data = conn.recv(1024)
+                    data = b""
+                    while True:
+                        packet = conn.recv(4096)
+                        if not packet:
+                            break
+                        data += packet
                     if data:
                         try:
                             message = pickle.loads(data)
@@ -58,28 +67,39 @@ def wait_for_messages():
 
 def main():
     #region Read Configuration
-    global host, port, model_directory, processor, model, device
+    global host, port, model_directory, processor, model, device, real_run
     try:
-        mlConfig = configreader.read_config('ml.cfg')
+        mlConfig = configreader.read_config('../ml.cfg')
         host = mlConfig.ip_address
         port = mlConfig.port_number
         model_directory = mlConfig.model_directory_path
     except FileNotFoundError:
         print("Error: Configuration file not found.")
         return 1
+
+    # Argument parsing
+    parser = argparse.ArgumentParser(description="ML Server")
+    parser.add_argument('--fake', action='store_true', help="Run in fake mode (do not use GPU)")
+    args = parser.parse_args()
+
+    # Set real_run based on --fake argument
+    real_run = not args.fake
     #endregion
 
-    processor = AutoProcessor.from_pretrained(model_directory)
-    model = Blip2ForConditionalGeneration.from_pretrained(model_directory, torch_dtype=torch.float16)
+    if real_run:
+        print("Warning: Running in real mode. This will use the model to generate text.")
+        processor = AutoProcessor.from_pretrained(model_directory)
+        model = Blip2ForConditionalGeneration.from_pretrained(model_directory, torch_dtype=torch.float16)
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print("Warning: CUDA is not available. Running on CPU.") if not torch.cuda.is_available() else None
-    model.to(device)
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print("Warning: CUDA is not available. Running on CPU.") if not torch.cuda.is_available() else None
+        model.to(device)
 
     wait_for_messages()
 
 
 if __name__ == "__main__":
+
     try:
         sys.exit(main())
     except KeyboardInterrupt:
