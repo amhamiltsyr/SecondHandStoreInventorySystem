@@ -69,7 +69,7 @@ def main():
     #region Read Configuration
     global host, port, model_directory, processor, model, device, real_run
     try:
-        mlConfig = configreader.read_config('../ml.cfg')
+        mlConfig = configreader.read_config('ml.cfg')
         host = mlConfig.ip_address
         port = mlConfig.port_number
         model_directory = mlConfig.model_directory_path

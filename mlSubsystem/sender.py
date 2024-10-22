@@ -8,7 +8,7 @@ import configreader
 def getconfig():
     # region Read Configuration
     try:
-        mlConfig = configreader.read_config('../ml.cfg')
+        mlConfig = configreader.read_config('ml.cfg')
         host = mlConfig.ip_address
         port = mlConfig.port_number
         return host, port

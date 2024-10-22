@@ -21,7 +21,8 @@ def read_config(file_path):
     return MLConfig(port_number, model_directory_path, ip_address, model_name)
 
 # Example usage
-mlConfig = read_config('../ml.cfg')
-print(f"Port Number: {mlConfig.port_number}")
-print(f"Model Directory Path: {mlConfig.model_directory_path}")
-print(f"IP Address: {mlConfig.ip_address}")
+# mlConfig = read_config('ml.cfg')
+# print(f"Port Number: {mlConfig.port_number}")
+# print(f"Model Directory Path: {mlConfig.model_directory_path}")
+# print(f"IP Address: {mlConfig.ip_address}")
+# print(f"Model Name: {mlConfig.model_name}")
