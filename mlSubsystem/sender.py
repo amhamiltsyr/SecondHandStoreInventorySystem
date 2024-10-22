@@ -5,6 +5,8 @@ import argparse
 import sys
 import configreader
 
+debug = False
+
 def getconfig():
     # region Read Configuration
     try:
@@ -38,9 +40,6 @@ def send_message(image, message):
             image_prompt = (image, message)
 
             serialized_message = pickle.dumps(image_prompt)
-            # dump to tempPickle to debug
-            with open("tempPickle", "wb") as f:
-                f.write(serialized_message)
 
             s.sendall(serialized_message)
             s.shutdown(socket.SHUT_WR)
@@ -49,9 +48,10 @@ def send_message(image, message):
             data = s.recv(1024)
             response = pickle.loads(data)
 
-            print(f"Receiver Status: {response['status']}")
-            print(f"Receiver Message: {response['message']}")
-            return response['status']
+            if debug:
+                print(f"Receiver Status: {response['status']}")
+                print(f"Receiver Message: {response['message']}")
+            return response['message']
         except ConnectionRefusedError:
             print("Error: Receiver is not running.")
             return 3
@@ -60,11 +60,16 @@ def send_message(image, message):
             return 4
 
 
-if __name__ == "__main__":
+def main():
+    global debug
     parser = argparse.ArgumentParser(description="Send a message to the receiver.")
     parser.add_argument('-m', '--message', required=False, default="", help="Prompt for the model")
     parser.add_argument('-i', '--image', required=True, help="Path to the image file")
+    parser.add_argument('-d ', '--debug', action='store_true', help="Enable debug mode")
     args = parser.parse_args()
+    send_message(load_image(args.image), args.message)
 
-    exit_code = send_message(load_image(args.image), args.message)
-    sys.exit(exit_code)
+
+if __name__ == "__main__":
+    main()
+
