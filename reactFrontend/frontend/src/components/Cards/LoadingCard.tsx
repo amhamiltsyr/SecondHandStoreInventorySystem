@@ -1,6 +1,6 @@
 import React from "react";
-import { Card, Placeholder } from "react-bootstrap";
-import "./MarketCard.css";
+import { Card, Placeholder, Spinner } from "react-bootstrap";
+import "./LoadingCard.css";
 
 const LoadingCard: React.FC = () => {
   return (
@@ -9,11 +9,9 @@ const LoadingCard: React.FC = () => {
       style={{ minWidth: "220px", maxWidth: "400px" }}
     >
       <div className="card-img-wrapper">
-        <Card.Img
-          variant="top"
-          src="https://placehold.co/400"
-          className="card-img"
-        />
+        <Spinner className="spinner" />
+
+        <Card.Img variant="top" className="card-img" />
       </div>
       <Card.Body>
         <Placeholder as={Card.Title} animation="glow">

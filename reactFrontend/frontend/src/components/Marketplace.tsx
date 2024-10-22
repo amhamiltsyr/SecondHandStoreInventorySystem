@@ -8,6 +8,7 @@ import {
 } from "react-bootstrap";
 import "./Marketplace.css";
 import MarketCard from "./Cards/MarketCard";
+import LoadingCard from "./Cards/LoadingCard";
 
 const Marketplace: React.FC = () => {
   const [items, setItems] = useState<
@@ -24,7 +25,7 @@ const Marketplace: React.FC = () => {
     const savedItemsPerPage = localStorage.getItem("itemsPerPage");
     return savedItemsPerPage ? parseInt(savedItemsPerPage) : 8;
   };
-
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(getInitialItemsPerPage);
   const [totalItems, setTotalItems] = useState(0); // Track total number of items
@@ -35,6 +36,7 @@ const Marketplace: React.FC = () => {
 
   // Fetch items based on the current page and page size
   const fetchItems = (page: number, itemsPerPageFetch: number) => {
+    setLoading(true);
     const startItemID = (page - 1) * itemsPerPageFetch;
 
     fetch(
@@ -55,6 +57,7 @@ const Marketplace: React.FC = () => {
 
         setItems(newItems);
         setTotalItems(totalCount);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -126,14 +129,18 @@ const Marketplace: React.FC = () => {
       <Row className="h">
         {items.map((item) => (
           <Col key={item.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
-            <MarketCard
-              id={item.id}
-              title={item.title}
-              description={item.description}
-              imageUrl={item.imageUrl}
-              price={item.price}
-              handleChange={refetchItems}
-            />
+            {loading ? (
+              <LoadingCard></LoadingCard>
+            ) : (
+              <MarketCard
+                id={item.id}
+                title={item.title}
+                description={item.description}
+                imageUrl={item.imageUrl}
+                price={item.price}
+                handleChange={refetchItems}
+              />
+            )}
           </Col>
         ))}
       </Row>

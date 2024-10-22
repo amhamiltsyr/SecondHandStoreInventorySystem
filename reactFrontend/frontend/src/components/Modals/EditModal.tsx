@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Button, Form, Alert } from "react-bootstrap";
+import { Modal, Button, Form, Alert, InputGroup } from "react-bootstrap";
 
 interface EditModalProps {
   show: boolean;
@@ -51,9 +51,21 @@ const EditModal: React.FC<EditModalProps> = ({ show, handleClose, item }) => {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              required
             />
           </Form.Group>
-
+          <Form.Group className="mb-3" controlId="formPrice">
+            <Form.Label>Price</Form.Label>
+            <InputGroup>
+              <InputGroup.Text>$</InputGroup.Text>
+              <Form.Control
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                required
+              />
+            </InputGroup>
+          </Form.Group>
           <Form.Group className="mb-3" controlId="formDescription">
             <Form.Label>Description</Form.Label>
             <Form.Control
@@ -61,15 +73,6 @@ const EditModal: React.FC<EditModalProps> = ({ show, handleClose, item }) => {
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formPrice">
-            <Form.Label>Price</Form.Label>
-            <Form.Control
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
             />
           </Form.Group>
         </Form>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Form, Button, Modal } from "react-bootstrap";
+import { Card, Form, Button, Modal, InputGroup } from "react-bootstrap";
 import "./UploadForm.css";
 
 const UploadForm: React.FC = () => {
@@ -51,12 +51,15 @@ const UploadForm: React.FC = () => {
 
             <Form.Group className="mb-3" controlId="price">
               <Form.Label>Price</Form.Label>
-              <Form.Control
-                type="text"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                required
-              />
+              <InputGroup>
+                <InputGroup.Text>$</InputGroup.Text>
+                <Form.Control
+                  type="number"
+                  placeholder="Enter amount"
+                  aria-label="Amount"
+                  required
+                />
+              </InputGroup>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="description">

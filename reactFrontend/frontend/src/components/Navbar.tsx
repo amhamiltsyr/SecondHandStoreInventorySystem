@@ -53,13 +53,13 @@ const AppNavbar: React.FC = () => {
             </LinkContainer>
           </Nav>
           <Button
-            color={theme}
-            className="rounded-circle btn-primary-outline"
+            variant={theme}
+            className="rounded-circle"
             onClick={toggleTheme}
           >
             {" "}
             {theme === "light" ? (
-              <i className="bi bi-brightness-high-fill icon-white"></i>
+              <i className="bi bi-sun-fill icon-black"></i>
             ) : (
               <i className="bi bi-moon-stars-fill icon-white"></i>
             )}
