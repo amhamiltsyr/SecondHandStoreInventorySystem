@@ -86,7 +86,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
             <Button variant="primary" onClick={handleView}>
               View Item
             </Button>
-            <Dropdown className="rightAlign">
+            <Dropdown className="rightAlign dropdown">
               <Dropdown.Toggle
                 as={Button}
                 variant={theme === "light" ? "light" : "dark"}

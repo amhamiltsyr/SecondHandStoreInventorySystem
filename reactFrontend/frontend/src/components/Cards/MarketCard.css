@@ -33,3 +33,7 @@
   .no-caret::after {
     display: none !important;
   }
+
+.dropdown{
+  z-index: 1051;
+}
