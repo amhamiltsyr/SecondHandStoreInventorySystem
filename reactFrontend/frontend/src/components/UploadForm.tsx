@@ -1,22 +1,38 @@
 import React, { useState } from "react";
-import { Card, Form, Button, Modal, InputGroup } from "react-bootstrap";
+import { Card, Form, Button, Modal, InputGroup, Alert } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import "./UploadForm.css";
 
 const UploadForm: React.FC = () => {
+  //state management declarationd
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showError, setShowError] = useState(false);
 
+  //submit function with api call to create new item
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     fetch(
       `http://127.0.0.1:8000/upload/createListing/test/${title}/${description}/${price}`
-    ).catch((error) => console.error("error:", error));
-
-    console.log({ title, description, price });
-    setShowModal(true);
+    )
+      .then((response) => {
+        if (response.ok) {
+          // Request was successful, log the details and show the modal
+          console.log({ title, description, price });
+          setShowModal(true);
+          setShowError(false);
+        } else {
+          // If the response status is not ok, show an error
+          setShowError(true);
+        }
+      })
+      .catch((error) => {
+        // Handle any network or fetch errors
+        console.error("Error during fetch:", error);
+        setShowError(true);
+      });
   };
 
   return (
@@ -74,6 +90,14 @@ const UploadForm: React.FC = () => {
                 required
               />
             </Form.Group>
+
+            {showError ? (
+              <Alert variant="danger">
+                There was an error uploading the item.
+              </Alert>
+            ) : (
+              <></>
+            )}
 
             <Button variant="primary" type="submit">
               Upload

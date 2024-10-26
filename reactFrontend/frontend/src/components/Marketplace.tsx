@@ -24,16 +24,20 @@ const Marketplace: React.FC = () => {
     }>
   >([]);
 
+  //get items per page from browser storage
   const getInitialItemsPerPage = () => {
     const savedItemsPerPage = localStorage.getItem("itemsPerPage");
     return savedItemsPerPage ? parseInt(savedItemsPerPage) : 8;
   };
+
+  //state management
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(getInitialItemsPerPage);
   const [searchTerm, setSearchTerm] = useState("");
   const [totalPages, setTotalPages] = useState(0);
 
+  //refresh items function
   const refetchItems = () => {
     fetchItems(currentPage, itemsPerPage);
   };
@@ -146,6 +150,7 @@ const Marketplace: React.FC = () => {
         style={{ marginBottom: "50px" }}
         className="justify-content-center h"
       >
+        {items.length === 0 ? <h6>No items found.</h6> : <></>}
         {items.map((item) => (
           <Col key={item.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
             {loading ? (

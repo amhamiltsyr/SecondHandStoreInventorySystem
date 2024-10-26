@@ -19,6 +19,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
 }) => {
   const [showError, setShowError] = useState(false);
 
+  //handle the save changes(delete) button by making an api request
   const handleSave = () => {
     setShowError(false);
     fetch(`http://127.0.0.1:8000/upload/deleteListing/${item.id}`)
@@ -26,7 +27,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
         handleClose(); // Close modal on successful save
       })
       .catch((error) => {
-        setShowError(true);
+        setShowError(true); // show error warning if save is unsuccessful
         throw new Error(error);
       });
   };
