@@ -1,5 +1,11 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import configreader
 from transformers import AutoProcessor, Blip2ForConditionalGeneration
-from mlSubsystem import configreader
+
+
+from transformers import AutoProcessor, Blip2ForConditionalGeneration
 
 
 def main():

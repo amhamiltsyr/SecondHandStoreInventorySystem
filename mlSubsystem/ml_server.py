@@ -1,11 +1,17 @@
+
 import argparse
 import socket
 import pickle
+
+import os
 import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import configreader
+
 from PIL import Image
 from transformers import AutoProcessor, Blip2ForConditionalGeneration
 import torch
-import configreader
+
 
 host = None  # localhost
 port = None  # arbitrary non-privileged port
