@@ -19,6 +19,7 @@ const EditModal: React.FC<EditModalProps> = ({ show, handleClose, item }) => {
   const [price, setPrice] = useState(item.price);
   const [showError, setShowError] = useState(false);
 
+  //handle the save changes button by making an api request
   const handleSave = () => {
     setShowError(false);
     fetch(
@@ -28,7 +29,7 @@ const EditModal: React.FC<EditModalProps> = ({ show, handleClose, item }) => {
         handleClose(); // Close modal on successful save
       })
       .catch((error) => {
-        setShowError(true);
+        setShowError(true); // error if save fails
         throw new Error(error);
       });
   };

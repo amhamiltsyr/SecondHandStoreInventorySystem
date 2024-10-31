@@ -22,11 +22,13 @@ const MarketCard: React.FC<MarketCardProps> = ({
   price,
   handleChange,
 }) => {
+  // state management, showing popups and theme management
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
   const [theme, setTheme] = useState("light");
 
+  //handling button clicks to show and hide modals
   const handleEdit = () => setShowEditModal(true);
   const handleDelete = () => setShowDeleteModal(true);
   const handleView = () => setShowItemModal(true);
@@ -37,6 +39,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
     handleChange();
   };
 
+  //get the current theme from the document on load, and anytime it changes
   useEffect(() => {
     const currentTheme =
       document.documentElement.getAttribute("data-bs-theme") || "light";
@@ -58,6 +61,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
     };
   }, []);
 
+  //placeholder image url
   imageUrl = "https://picsum.photos/300/400";
 
   return (
@@ -82,7 +86,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
             <Button variant="primary" onClick={handleView}>
               View Item
             </Button>
-            <Dropdown className="rightAlign">
+            <Dropdown className="rightAlign dropdown">
               <Dropdown.Toggle
                 as={Button}
                 variant={theme === "light" ? "light" : "dark"}
