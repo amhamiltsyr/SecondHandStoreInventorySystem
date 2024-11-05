@@ -4,18 +4,29 @@ import { LinkContainer } from "react-router-bootstrap";
 import "./UploadForm.css";
 
 const UploadForm: React.FC = () => {
-  //state management declarationd
+  //state management declarations
+  const [image, setImage] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [imageID, setImageID] = useState("null");
+
+  async function fetchCSRFToken() {
+    const response = await fetch(
+      "http://127.0.0.1:8000/upload/get-csrf-token/"
+    );
+    const data = await response.json();
+    return data.csrfToken;
+  }
 
   //submit function with api call to create new item
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+
     fetch(
-      `http://127.0.0.1:8000/upload/createListing/test/${title}/${description}/${price}`
+      `http://127.0.0.1:8000/upload/createListing/${title}/${description}/${price}/null`
     )
       .then((response) => {
         if (response.ok) {
@@ -35,6 +46,52 @@ const UploadForm: React.FC = () => {
       });
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
+
+  const handleAnalyze = async () => {
+    if (!image) {
+      alert("Please select an image first!");
+      return;
+    }
+
+    const csrfToken = await fetchCSRFToken();
+
+    // Form data to send image as a file
+    const formData = new FormData();
+    formData.append("image", image);
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/upload/uploadImage/",
+        {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrfToken,
+          },
+          credentials: "include",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+
+      // Update title and price based on AI response
+      if (data.cost !== "error" && data.product_listing !== "error") {
+        setTitle(data.product_listing);
+        setPrice(data.cost);
+        setImageID(data.imageID);
+      } else {
+        alert("Error processing the image");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+  };
+
   return (
     <>
       <Card className="upload-card">
@@ -43,16 +100,10 @@ const UploadForm: React.FC = () => {
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formFile">
               <Form.Label>Image</Form.Label>
-              <Form.Control type="file" />
+              <Form.Control type="file" onChange={handleFileChange} />
             </Form.Group>
 
-            <Button
-              className="btn-analyze mb-3"
-              onClick={() => {
-                setTitle("test");
-                setPrice("$1");
-              }}
-            >
+            <Button className="btn-analyze mb-3" onClick={handleAnalyze}>
               Analyze
             </Button>
 
@@ -72,6 +123,7 @@ const UploadForm: React.FC = () => {
                 <InputGroup.Text>$</InputGroup.Text>
                 <Form.Control
                   type="number"
+                  value={price}
                   placeholder="Enter amount"
                   aria-label="Amount"
                   onChange={(e) => setPrice(e.target.value)}

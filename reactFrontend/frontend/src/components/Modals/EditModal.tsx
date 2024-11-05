@@ -23,7 +23,7 @@ const EditModal: React.FC<EditModalProps> = ({ show, handleClose, item }) => {
   const handleSave = () => {
     setShowError(false);
     fetch(
-      `http://127.0.0.1:8000/upload/editListing/${item.id}/test/${title}/${description}/${price}`
+      `http://127.0.0.1:8000/upload/editListing/${item.id}/${title}/${description}/${price}`
     )
       .then(() => {
         handleClose(); // Close modal on successful save
