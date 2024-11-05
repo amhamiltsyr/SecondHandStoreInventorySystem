@@ -66,15 +66,15 @@ def get_next(request,itemsToSend, idToStart, searchTerm=""):
 
 # Edits item, passed by url parameters
 def edit_listing(request, itemNumber, name, description, price):
-	item = InventoryItem.objects.get(id = itemNumber)
-	item.name = name
-	item.description = description
-	stringPriceToFloat = float(price) # floats cannot be passed via URL
-	item.price = price
-	item.itemNumber = itemNumber
-	item.archieved = False
-	item.save()
-	return HttpResponse('Edit Listing')
+    item = InventoryItem.objects.get(id=itemNumber)
+    item.name = name
+    item.description = description
+    stringPriceToFloat = float(price)  # floats cannot be passed via URL
+    item.price = price
+    item.itemNumber = itemNumber
+    item.archieved = False
+    item.save()
+    return HttpResponse('Edit Listing')
 
 
 # Edits the provided item number to have archieved=True
