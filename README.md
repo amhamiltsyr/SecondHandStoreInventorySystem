@@ -67,3 +67,10 @@ import mlSubsystem.sender as sender
 
 print(f"Response: {sender.send_message(Image.open("test.png"), "Cost:")}")
 ```
+
+## Starting the frontend
+Change directory to the reactFrontend/frontend directory
+
+run ```npm install```
+
+run ```npm run dev```
