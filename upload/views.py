@@ -7,7 +7,7 @@ from django.db.models import Q
 from PIL import Image
 import mlSubsystem.sender as sender
 from django.middleware.csrf import get_token
-from .forms import ImageUploadForm
+from .forms import ImageUploadForm, ProductUploadForm
 from django.views.decorators.csrf import csrf_exempt
 
 itemNumberOn = 1 # tracks what item number the database will assign the next listing created
@@ -41,10 +41,43 @@ def upload_image(request):
 		})
 
 
-# Creates a new item, passed by url parameters
-def create_listing(request, name, description, price, imageID):
-	InventoryItem.objects.create(name=name,description=description, price=price, archieved=False, imageID=imageID)	
-	return HttpResponse('Create Listing')
+@csrf_exempt
+def create_listing(request):
+    if request.method == 'POST':
+        try:
+            form = ProductUploadForm(request.POST, request.FILES)
+            #if form.is_valid():
+                #form.save()
+            name = request.POST.get('name')
+            description = request.POST.get('description', 'No Description')  # Default description if not provided
+            price = request.POST.get('price')
+            image = request.FILES.get('image')
+
+            # Validate required fields
+            if not all([name, price, image]):
+                return JsonResponse({'error': 'Missing required fields: name, price, or image'}, status=400)
+            
+            # Convert price to float
+            try:
+                price = float(price)
+            except ValueError:
+                return JsonResponse({'error': 'Invalid price format'}, status=400)
+
+            # Create the InventoryItem instance
+            item = InventoryItem.objects.create(
+                name=name,
+                description=description,
+                price=price,
+                image=image,
+                archieved=False
+            )
+            return JsonResponse({'message': 'Listing created successfully', 'id': item.id}, status=201)
+
+        except Exception as e:
+            return JsonResponse({'error': 'An unexpected error occurred'}, status=500)
+
+    return JsonResponse({'error': 'Invalid HTTP method. Only POST is allowed.'}, status=405)
+
 
 
 # Gets the next 20 items in the inventory database

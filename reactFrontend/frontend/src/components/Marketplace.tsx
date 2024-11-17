@@ -59,7 +59,7 @@ const Marketplace: React.FC = () => {
           id: item.pk,
           title: item.fields.name,
           description: item.fields.description,
-          imageUrl: `http://127.0.0.1:8000${item.fields.image}`,
+          imageUrl: `http://127.0.0.1:8000/media/${item.fields.image}`,
           price: item.fields.price,
         }));
 

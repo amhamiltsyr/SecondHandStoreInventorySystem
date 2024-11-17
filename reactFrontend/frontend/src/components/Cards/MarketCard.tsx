@@ -3,6 +3,7 @@ import { Card, Button, Badge, Dropdown } from "react-bootstrap";
 import EditModal from "../Modals/EditModal";
 import DeleteModal from "../Modals/DeleteModal";
 import "./MarketCard.css";
+import NullImg from "../../assets/null.png";
 import ItemModal from "../Modals/ItemModal";
 
 interface MarketCardProps {
@@ -61,8 +62,9 @@ const MarketCard: React.FC<MarketCardProps> = ({
     };
   }, []);
 
-  //placeholder image url
-  imageUrl = "https://picsum.photos/300/400";
+  if (imageUrl == "http://127.0.0.1:8000/media/null") {
+    imageUrl = NullImg;
+  }
 
   return (
     <>

@@ -11,7 +11,6 @@ const UploadForm: React.FC = () => {
   const [price, setPrice] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [imageID, setImageID] = useState("null");
 
   async function fetchCSRFToken() {
     const response = await fetch(
@@ -22,28 +21,46 @@ const UploadForm: React.FC = () => {
   }
 
   //submit function with api call to create new item
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    fetch(
-      `http://127.0.0.1:8000/upload/createListing/${title}/${description}/${price}/null`
-    )
-      .then((response) => {
-        if (response.ok) {
-          // Request was successful, log the details and show the modal
-          console.log({ title, description, price });
-          setShowModal(true);
-          setShowError(false);
-        } else {
-          // If the response status is not ok, show an error
-          setShowError(true);
+    if (!image) {
+      console.error("No image selected");
+      setShowError(true);
+      return;
+    }
+
+    // Create a FormData object to send form data including the image
+    const formData = new FormData();
+    formData.append("name", title); // Assuming `title` is the name of the item
+    formData.append("description", description || ""); // Default to empty string if description is not provided
+    formData.append("price", price.toString()); // Ensure price is sent as a string
+    formData.append("image", image);
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/upload/createListing/",
+        {
+          method: "POST",
+          body: formData,
         }
-      })
-      .catch((error) => {
-        // Handle any network or fetch errors
-        console.error("Error during fetch:", error);
+      );
+
+      if (response.ok) {
+        // If the response is successful, log the details and show the modal
+        console.log({ title, description, price });
+        setShowModal(true);
+        setShowError(false);
+      } else {
+        // Handle server errors or validation errors from the API
+        console.error("Failed to create listing. Status:", response.status);
         setShowError(true);
-      });
+      }
+    } catch (error) {
+      // Handle network or fetch errors
+      console.error("Error during fetch:", error);
+      setShowError(true);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,7 +100,6 @@ const UploadForm: React.FC = () => {
       if (data.cost !== "error" && data.product_listing !== "error") {
         setTitle(data.product_listing);
         setPrice(data.cost);
-        setImageID(data.imageID);
       } else {
         alert("Error processing the image");
       }

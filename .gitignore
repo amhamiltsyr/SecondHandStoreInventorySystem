@@ -1,5 +1,6 @@
 node_modules
 .venv
 /media/images/
+/media/product_images/
 /.idea/
 /mlSubsystem/local_blip2-opt-2.7b/
