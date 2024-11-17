@@ -43,7 +43,7 @@ def upload_image(request):
 
 # Creates a new item, passed by url parameters
 def create_listing(request, name, description, price, imageID):
-	InventoryItem.objects.create(name=name,description=description, price=price, archieved=False, imageID=imageID)	
+	InventoryItem.objects.create(name=name,description=description, price=price, archieved=False, imageID=imageID)
 	return HttpResponse('Create Listing')
 
 
@@ -81,7 +81,7 @@ def edit_listing(request, itemNumber, name, description, price):
 def delete_listing(request, itemNumber):
 	item = InventoryItem.objects.get(id = itemNumber)
 	item.archieved = True
-	item.save() 
+	item.save()
 	return HttpResponse('Listing archived')
 
 def get_csrf_token(request):
