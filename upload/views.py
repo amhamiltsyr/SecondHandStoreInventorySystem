@@ -24,7 +24,10 @@ def upload_image(request):
 		# Call on AI Model
 		if 'image' in request.FILES:
 			image = form.cleaned_data['image']
+
 			pil_image = Image.open(image)
+			if pil_image.size[0] > 512 or pil_image.size[1] > 512:
+				pil_image = image.resize((512, 512))
 			cost = sender.send_message(pil_image, "Cost in Dollars:")
 			product_listing = sender.send_message(pil_image, "Title:")
 			

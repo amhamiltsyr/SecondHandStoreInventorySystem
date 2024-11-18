@@ -27,9 +27,6 @@ def process_image(image: Image, prompt):
         return "Dummy Generated Text"
     global processor, model, device
     image = image.convert('RGB')
-    if image.size[0] > 512 or image.size[1] > 512:
-        image = image.resize((512, 512))
-        print(f"\tWarning: Image resized to {image.size}")
     inputs = processor(image, text=prompt, return_tensors="pt").to(device, torch.float16)
     generated_ids = model.generate(**inputs)
     generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
