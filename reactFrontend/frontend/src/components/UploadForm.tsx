@@ -20,6 +20,7 @@ const UploadForm: React.FC = () => {
   const [price, setPrice] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [showImgError, setShowImgError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function fetchCSRFToken() {
@@ -75,9 +76,24 @@ const UploadForm: React.FC = () => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]; // Get the first file
+
+    if (file) {
+      // Check if the file is an image (based on mime type)
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+      ];
+      if (allowedTypes.includes(file.type)) {
+        setImage(file); // Store the valid image file
+        setShowImgError(false); // Clear any previous error
+      } else {
+        setShowImgError(true);
+        setImage(null); // Clear the previous image if invalid
+      }
     }
   };
 
@@ -128,11 +144,16 @@ const UploadForm: React.FC = () => {
             <Form.Group className="mb-3" controlId="formFile">
               <Form.Label>Image</Form.Label>
               <Form.Control type="file" onChange={handleFileChange} />
+              {showImgError ? (
+                <strong>File type must be an image.</strong>
+              ) : (
+                <></>
+              )}
             </Form.Group>
 
             <Button
               className="btn-analyze mb-3"
-              disabled={loading}
+              disabled={loading || showImgError}
               onClick={handleAnalyze}
             >
               Analyze
