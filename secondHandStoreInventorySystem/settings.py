@@ -11,9 +11,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,8 +26,7 @@ SECRET_KEY = 'django-insecure-d9!+2w5%ucwqo*y27th_c76cu2^(afo5*%4w5c(5#y=co%2@_&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -50,16 +50,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-     'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'secondHandStoreInventorySystem.urls'
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
-CSRF_TRUSTED_ORIGINS = ['http://localhost:5173']
-
-
+CORS_ALLOWED_ORIGINS = ['http://cis454project.hopto.org']
+CSRF_TRUSTED_ORIGINS = ['http://cis454project.hopto.org']
 
 TEMPLATES = [
     {
@@ -83,17 +81,23 @@ WSGI_APPLICATION = 'secondHandStoreInventorySystem.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+# 	    'NAME': 'inventory_db',
+# 	    'USER': 'user',
+# 	    'PASSWORD': 'password',
+# 	    'HOST': 'localhost',
+# 	    'PORT': '3306',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-	    'NAME': 'inventory_db',
-	    'USER': 'user',
-	    'PASSWORD': 'password',
-	    'HOST': 'localhost',
-	    'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -139,3 +143,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# if DEBUG:
+#     CORS_ALLOW_ALL_ORIGINS = True
