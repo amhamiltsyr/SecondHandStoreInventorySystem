@@ -25,8 +25,8 @@ def upload_image(request):
 		if 'image' in request.FILES:
 			image = form.cleaned_data['image']
 			pil_image = Image.open(image)
-			cost = sender.send_message(pil_image, "Cost:")
-			product_listing = sender.send_message(pil_image, "Product Listing:")
+			cost = sender.send_message(pil_image, "Cost in Dollars:")
+			product_listing = sender.send_message(pil_image, "Title:")
 			
 		# Return suggestions to front end
 			return JsonResponse({
