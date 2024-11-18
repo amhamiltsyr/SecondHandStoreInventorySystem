@@ -13,7 +13,6 @@ from django.views.decorators.csrf import csrf_exempt
 itemNumberOn = 1 # tracks what item number the database will assign the next listing created
 
 # Engages with AI model, returns generated cost and product listing
-
 @csrf_exempt
 def upload_image(request):
 	if request.method == 'POST':
@@ -21,13 +20,14 @@ def upload_image(request):
 		if form.is_valid():
 		# Save to database
 			form.save()
+			
 		# Call on AI Model
-
 		if 'image' in request.FILES:
 			image = form.cleaned_data['image']
 			pil_image = Image.open(image)
 			cost = sender.send_message(pil_image, "Cost:")
 			product_listing = sender.send_message(pil_image, "Product Listing:")
+			
 		# Return suggestions to front end
 			return JsonResponse({
 					'cost': cost,
@@ -45,9 +45,8 @@ def upload_image(request):
 def create_listing(request):
     if request.method == 'POST':
         try:
+	    # Collect info from form 
             form = ProductUploadForm(request.POST, request.FILES)
-            #if form.is_valid():
-                #form.save()
             name = request.POST.get('name')
             description = request.POST.get('description', 'No Description')  # Default description if not provided
             price = request.POST.get('price')
@@ -72,7 +71,7 @@ def create_listing(request):
                 archieved=False
             )
             return JsonResponse({'message': 'Listing created successfully', 'id': item.id}, status=201)
-
+	# Error catching
         except Exception as e:
             return JsonResponse({'error': 'An unexpected error occurred'}, status=500)
 
@@ -80,14 +79,16 @@ def create_listing(request):
 
 
 
-# Gets the next 20 items in the inventory database
+# Gets the next n items in the inventory database
 def get_next(request,itemsToSend, idToStart, searchTerm=""):
 	all_items = InventoryItem.objects.filter(archieved=False)
 
+	# filter on search term 
 	if searchTerm:
 		all_items = all_items.filter(
 			Q(name__icontains=searchTerm) | Q(description__icontains=searchTerm)
 		)
+	# partition return items and convert to JSON
 	to_return = all_items[idToStart:idToStart + itemsToSend]
 	to_json = serializers.serialize('json', to_return)
 	total_count = all_items.count()
