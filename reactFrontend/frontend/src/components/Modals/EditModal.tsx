@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button, Form, Alert, InputGroup } from "react-bootstrap";
+import config from "../../config";
 
 interface EditModalProps {
   show: boolean;
@@ -23,7 +24,7 @@ const EditModal: React.FC<EditModalProps> = ({ show, handleClose, item }) => {
   const handleSave = () => {
     setShowError(false);
     fetch(
-      `http://127.0.0.1:8000/upload/editListing/${item.id}/${title}/${description}/${price}`
+      `${config.apiBaseUrl}/upload/editListing/${item.id}/${title}/${description}/${price}`
     )
       .then(() => {
         handleClose(); // Close modal on successful save

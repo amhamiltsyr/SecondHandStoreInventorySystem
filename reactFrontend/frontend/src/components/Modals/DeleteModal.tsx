@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button, Alert } from "react-bootstrap";
+import config from "../../config";
 
 interface DeleteModalProps {
   show: boolean;
@@ -22,7 +23,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   //handle the save changes(delete) button by making an api request
   const handleSave = () => {
     setShowError(false);
-    fetch(`http://127.0.0.1:8000/upload/deleteListing/${item.id}`)
+    fetch(`${config.apiBaseUrl}/upload/deleteListing/${item.id}`)
       .then(() => {
         handleClose(); // Close modal on successful save
       })

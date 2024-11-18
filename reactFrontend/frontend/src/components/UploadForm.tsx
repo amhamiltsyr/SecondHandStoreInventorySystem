@@ -1,7 +1,16 @@
 import React, { useState } from "react";
-import { Card, Form, Button, Modal, InputGroup, Alert } from "react-bootstrap";
+import {
+  Card,
+  Form,
+  Button,
+  Modal,
+  InputGroup,
+  Alert,
+  Spinner,
+} from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import "./UploadForm.css";
+import config from "../config";
 
 const UploadForm: React.FC = () => {
   //state management declarations
@@ -11,11 +20,10 @@ const UploadForm: React.FC = () => {
   const [price, setPrice] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function fetchCSRFToken() {
-    const response = await fetch(
-      "http://127.0.0.1:8000/upload/get-csrf-token/"
-    );
+    const response = await fetch("${config.apiBaseUrl}/upload/get-csrf-token/");
     const data = await response.json();
     return data.csrfToken;
   }
@@ -39,7 +47,7 @@ const UploadForm: React.FC = () => {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/upload/createListing/",
+        `${config.apiBaseUrl}/upload/createListing/`,
         {
           method: "POST",
           body: formData,
@@ -76,7 +84,7 @@ const UploadForm: React.FC = () => {
     }
 
     const csrfToken = await fetchCSRFToken();
-
+    setLoading(true);
     // Form data to send image as a file
     const formData = new FormData();
     formData.append("image", image);
@@ -95,7 +103,7 @@ const UploadForm: React.FC = () => {
       );
 
       const data = await response.json();
-
+      setLoading(false);
       // Update title and price based on AI response
       if (data.cost !== "error" && data.product_listing !== "error") {
         setTitle(data.product_listing);
@@ -119,9 +127,14 @@ const UploadForm: React.FC = () => {
               <Form.Control type="file" onChange={handleFileChange} />
             </Form.Group>
 
-            <Button className="btn-analyze mb-3" onClick={handleAnalyze}>
+            <Button
+              className="btn-analyze mb-3"
+              disabled={loading}
+              onClick={handleAnalyze}
+            >
               Analyze
             </Button>
+            {loading ? <Spinner style={{ marginLeft: 10 }}></Spinner> : <></>}
 
             <Form.Group className="mb-3" controlId="title">
               <Form.Label>Title</Form.Label>
