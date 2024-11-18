@@ -171,7 +171,6 @@ const UploadForm: React.FC = () => {
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                required
               />
             </Form.Group>
 

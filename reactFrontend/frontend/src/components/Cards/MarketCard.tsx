@@ -91,7 +91,15 @@ const MarketCard: React.FC<MarketCardProps> = ({
           <Card.Text>
             <strong>${price}</strong>
           </Card.Text>
-          <Card.Text>{description}</Card.Text>
+          <Card.Text
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {description ? description : "​"}
+          </Card.Text>
           <div className="d-flex">
             <Button variant="primary" onClick={handleView}>
               View Item
