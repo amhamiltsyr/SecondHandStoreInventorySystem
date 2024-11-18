@@ -79,7 +79,15 @@ const MarketCard: React.FC<MarketCardProps> = ({
           </Badge>
         </div>
         <Card.Body>
-          <Card.Title>{title}</Card.Title>
+          <Card.Title
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {title}
+          </Card.Title>
           <Card.Text>
             <strong>${price}</strong>
           </Card.Text>

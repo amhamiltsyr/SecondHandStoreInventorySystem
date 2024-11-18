@@ -23,7 +23,7 @@ const UploadForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   async function fetchCSRFToken() {
-    const response = await fetch("${config.apiBaseUrl}/upload/get-csrf-token/");
+    const response = await fetch(`${config.apiBaseUrl}/upload/get-csrf-token/`);
     const data = await response.json();
     return data.csrfToken;
   }
@@ -35,6 +35,10 @@ const UploadForm: React.FC = () => {
     if (!image) {
       console.error("No image selected");
       setShowError(true);
+      return;
+    }
+
+    if (!price) {
       return;
     }
 
@@ -90,24 +94,23 @@ const UploadForm: React.FC = () => {
     formData.append("image", image);
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/upload/uploadImage/",
-        {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": csrfToken,
-          },
-          credentials: "include",
-          body: formData,
-        }
-      );
+      const response = await fetch(`${config.apiBaseUrl}/upload/uploadImage/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+        credentials: "include",
+        body: formData,
+      });
 
       const data = await response.json();
       setLoading(false);
       // Update title and price based on AI response
       if (data.cost !== "error" && data.product_listing !== "error") {
         setTitle(data.product_listing);
-        setPrice(data.cost);
+        const cleanedString = data.cost.replace(/[^0-9.]/g, "");
+
+        setPrice(cleanedString);
       } else {
         alert("Error processing the image");
       }
