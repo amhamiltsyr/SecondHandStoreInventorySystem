@@ -70,6 +70,8 @@ def main():
     parser.add_argument('-i', '--image', required=True, help="Path to the image file")
     parser.add_argument('-d ', '--debug', action='store_true', help="Enable debug mode")
     args = parser.parse_args()
+
+    debug = args.debug
     send_message(load_image(args.image), args.message)
 
 

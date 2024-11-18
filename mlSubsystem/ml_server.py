@@ -94,8 +94,19 @@ def main():
 
     if real_run:
         print("Warning: Running in real mode. This will use the model to generate text.")
-        processor = AutoProcessor.from_pretrained(model_directory)
-        model = Blip2ForConditionalGeneration.from_pretrained(model_directory, torch_dtype=torch.float16)
+        # Try/catch to handle model not found
+        try:
+            processor = AutoProcessor.from_pretrained(model_directory)
+            model = Blip2ForConditionalGeneration.from_pretrained(model_directory, torch_dtype=torch.float16)
+
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            print("Warning: CUDA is not available. Running on CPU.") if not torch.cuda.is_available() else None
+            model.to(device)
+        except EnvironmentError:
+            print("Error: Model not found.")
+            return 1
+        # processor = AutoProcessor.from_pretrained(model_directory)
+        # model = Blip2ForConditionalGeneration.from_pretrained(model_directory, torch_dtype=torch.float16)
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
         print("Warning: CUDA is not available. Running on CPU.") if not torch.cuda.is_available() else None

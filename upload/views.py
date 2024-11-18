@@ -120,4 +120,3 @@ def delete_listing(request, itemNumber):
 
 def get_csrf_token(request):
     return JsonResponse({'csrfToken': get_token(request)})
-
