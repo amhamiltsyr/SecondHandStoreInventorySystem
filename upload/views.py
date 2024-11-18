@@ -25,19 +25,19 @@ def upload_image(request):
 
 		if 'image' in request.FILES:
 			image = form.cleaned_data['image']
-			cost = sender.send_message(image, "Cost:")
-			product_listing = sender.send_message(image, "Product Listing:")
-			image_name = request.FILES['image'].name
+			pil_image = Image.open(image)
+			cost = sender.send_message(pil_image, "Cost:")
+			product_listing = sender.send_message(pil_image, "Product Listing:")
 		# Return suggestions to front end
 			return JsonResponse({
 					'cost': cost,
 					'product_listing': product_listing,
-					'imageID' : image_name
+					
 	   			})
 	return JsonResponse({
 						'cost': 'error',
 						'product_listing': 'error',
-						'imageID' : None
+						
 		})
 
 
