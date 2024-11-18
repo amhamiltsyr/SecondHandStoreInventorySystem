@@ -12,6 +12,7 @@ import {
 import "./Marketplace.css";
 import MarketCard from "./Cards/MarketCard";
 import LoadingCard from "./Cards/LoadingCard";
+import config from "../config";
 
 const Marketplace: React.FC = () => {
   const [items, setItems] = useState<
@@ -48,7 +49,7 @@ const Marketplace: React.FC = () => {
     const startItemID = (page - 1) * itemsPerPageFetch;
 
     fetch(
-      `http://127.0.0.1:8000/upload/getNext/${itemsPerPageFetch}/${startItemID}/${searchTerm}`
+      `${config.apiBaseUrl}/upload/getNext/${itemsPerPageFetch}/${startItemID}/${searchTerm}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -59,7 +60,7 @@ const Marketplace: React.FC = () => {
           id: item.pk,
           title: item.fields.name,
           description: item.fields.description,
-          imageUrl: `http://127.0.0.1:8000${item.fields.image}`,
+          imageUrl: `${config.apiBaseUrl}/media/${item.fields.image}`,
           price: item.fields.price,
         }));
 

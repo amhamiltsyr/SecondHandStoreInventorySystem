@@ -23,7 +23,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ show, handleClose, item }) => {
       </Modal.Header>
       <Modal.Body>
         <div className="text-center">
-          <Image src={item.imageUrl} rounded />
+          <Image className="img" src={item.imageUrl} fluid rounded />
         </div>
         <hr />
         Price: <strong>${item.price}</strong>
