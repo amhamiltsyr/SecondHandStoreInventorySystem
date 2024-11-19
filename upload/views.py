@@ -18,30 +18,30 @@ def upload_image(request):
 	if request.method == 'POST':
 		form = ImageUploadForm(request.POST, request.FILES)
 		if form.is_valid():
-		# Save to database
+			# Save to database
 			form.save()
-			
-		# Call on AI Model
+
+			# Call on AI Model
 		if 'image' in request.FILES:
 			image = form.cleaned_data['image']
 
 			pil_image = Image.open(image)
 			if pil_image.size[0] > 512 or pil_image.size[1] > 512:
 				pil_image = pil_image.resize((512, 512))
-			cost = sender.send_message(pil_image, "Cost in Dollars:")
-			product_listing = sender.send_message(pil_image, "Title:")
-			
-		# Return suggestions to front end
+			cost = sender.send_message(pil_image, "MSRP Price: $")
+			product_listing = sender.send_message(pil_image, "Product Name:")
+
+			# Return suggestions to front end
 			return JsonResponse({
-					'cost': cost,
-					'product_listing': product_listing,
-					
-	   			})
+				'cost': cost,
+				'product_listing': product_listing,
+
+			})
 	return JsonResponse({
-						'cost': 'error',
-						'product_listing': 'error',
-						
-		})
+		'cost': 'error',
+		'product_listing': 'error',
+
+	})
 
 
 @csrf_exempt
