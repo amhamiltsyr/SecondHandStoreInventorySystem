@@ -58,13 +58,13 @@ def send_message(image, message):
             return response['message']
         except ConnectionRefusedError:
             print("Error: Receiver is not running.")
-            return 3
+            return "3"
         except socket.timeout:
             print("Error: Connection timed out.")
-            return 5
+            return "5"
         except Exception as e:
             print(f"Error: {str(e)}")
-            return 4
+            return "4"
 
 
 def main():
