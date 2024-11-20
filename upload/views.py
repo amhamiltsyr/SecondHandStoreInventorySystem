@@ -10,6 +10,10 @@ from django.middleware.csrf import get_token
 from .forms import ImageUploadForm, ProductUploadForm
 from django.views.decorators.csrf import csrf_exempt
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 itemNumberOn = 1 # tracks what item number the database will assign the next listing created
 
 # Engages with AI model, returns generated cost and product listing
@@ -22,12 +26,14 @@ def upload_image(request):
 			form.save()
 
 			# Call on AI Model
+		logger.debug(f"Contents of request.FILES: {request.FILES}")
 		if 'image' in request.FILES:
 			image = form.cleaned_data['image']
 
 			pil_image = Image.open(image)
 			if pil_image.size[0] > 512 or pil_image.size[1] > 512:
 				pil_image = pil_image.resize((512, 512))
+
 			cost = sender.send_message(pil_image, "MSRP Price: $")
 			product_listing = sender.send_message(pil_image, "Product Name:")
 
