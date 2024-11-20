@@ -38,6 +38,7 @@ def send_message(image, message):
     host, port = getconfig()
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.settimeout(3)
         try:
             s.connect((host, port))
             image_prompt = (image, message)
@@ -58,6 +59,9 @@ def send_message(image, message):
         except ConnectionRefusedError:
             print("Error: Receiver is not running.")
             return 3
+        except socket.timeout:
+            print("Error: Connection timed out.")
+            return 5
         except Exception as e:
             print(f"Error: {str(e)}")
             return 4
