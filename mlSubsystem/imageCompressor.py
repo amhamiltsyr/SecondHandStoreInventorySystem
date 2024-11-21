@@ -1,3 +1,7 @@
+# Simple directory watcher and image resizer+compressor
+# This script watches a directory for new image files and resizes them if they exceed a certain dimension.
+# needed to maintain the speed of the
+
 import os
 import time
 from PIL import Image
@@ -16,9 +20,9 @@ class ImageResizeHandler(FileSystemEventHandler):
     def process_image(self, filepath):
         try:
             with Image.open(filepath) as img:
-                # Check if image needs resizing
+                # Check if image needs resizing, resize and compress
                 if img.width > self.max_dimension or img.height > self.max_dimension:
-                    # Maintain aspect ratio
+
                     img.thumbnail((self.max_dimension, self.max_dimension), Image.LANCZOS)
 
                     # Save with original format and reduced quality
@@ -41,9 +45,8 @@ def watch_directory(path, max_dimension=512, quality=75):
         observer.stop()
     observer.join()
 
+
 if __name__ == "__main__":
-    # Example usage
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    # images directory is this file's directory + ../media/product_images
     image_directory = os.path.join(current_directory, "../media/product_images")
     watch_directory(image_directory)

@@ -22,7 +22,7 @@ def getconfig():
         exit(-1)
     # endregion
 
-
+# Load the image from a path - only used when run manually
 def load_image(image_path):
     try:
         image = Image.open(image_path)
@@ -33,13 +33,14 @@ def load_image(image_path):
         print(f"Error: {str(e)}")
         return None
 
-
+# Main function that sends the image and message to the receiver - imported by views.py
 def send_message(image, message):
     host, port = getconfig()
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.settimeout(3)
         try:
+            # combine the image and message into a pickle for sending
             s.connect((host, port))
             image_prompt = (image, message)
 
@@ -48,7 +49,7 @@ def send_message(image, message):
             s.sendall(serialized_message)
             s.shutdown(socket.SHUT_WR)
 
-            # Receive the status code
+            # Receive the status code or response from ml_server
             data = s.recv(1024)
             response = pickle.loads(data)
 
@@ -56,6 +57,7 @@ def send_message(image, message):
                 print(f"Receiver Status: {response['status']}")
                 print(f"Receiver Message: {response['message']}")
             return response['message']
+        # Error handling
         except ConnectionRefusedError:
             print("Error: Receiver is not running.")
             return "3"
@@ -66,7 +68,7 @@ def send_message(image, message):
             print(f"Error: {str(e)}")
             return "4"
 
-
+# Main only used for standalone testing - not used by the web app
 def main():
     global debug
     parser = argparse.ArgumentParser(description="Send a message to the receiver.")

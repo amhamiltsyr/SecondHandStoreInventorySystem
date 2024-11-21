@@ -12,7 +12,7 @@ from PIL import Image
 from transformers import AutoProcessor, Blip2ForConditionalGeneration
 import torch
 
-
+# Global variables, used when the configreader is not used
 host = None  # localhost
 port = None  # arbitrary non-privileged port
 model_directory = None
@@ -22,6 +22,7 @@ device = None
 
 real_run = False
 
+# Processing the image to generate text - the core of the ML server
 def process_image(image: Image, prompt):
     if not real_run:
         return "Dummy Generated Text"
@@ -33,7 +34,8 @@ def process_image(image: Image, prompt):
     print(f"\tGenerated Text: {generated_text}")
     return generated_text
 
-
+# Starts a network server that listens for incoming messages on the specified host and port
+# The server receives an image and a prompt, processes the image, and sends back the generated text
 def wait_for_messages():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         try:
@@ -41,6 +43,8 @@ def wait_for_messages():
             s.listen()
             print("Receiver is waiting for messages...")
             while True:
+# the server will accept a connection and receive the data in 4K packets until the connection is closed
+# this could be a vulnerability if the client sends a large amount of data, or if multiple clients connect simultaneously
                 conn, addr = s.accept()
                 with conn:
                     data = b""
@@ -60,6 +64,8 @@ def wait_for_messages():
                             print(f"Received:\n\tImage: {img_metadata}\n\tPrompt: {prompt}")
                             generated_text = process_image(image, prompt)
                             conn.sendall(pickle.dumps({"status": 0, "message": generated_text}))
+
+# the rest of the function is error handling
                         except pickle.UnpicklingError:
                             print("Error: Unable to unpickle the received data")
                             conn.sendall(pickle.dumps({"status": 1, "message": "Unpickling Error"}))
@@ -93,7 +99,9 @@ def main():
     real_run = not args.fake
     #endregion
 
+
     if real_run:
+        # loading the model and processor
         print("Warning: Running in real mode. This will use the model to generate text.")
         # Try/catch to handle model not found
         try:
@@ -106,9 +114,7 @@ def main():
         except EnvironmentError:
             print("Error: Model not found.")
             return 1
-        # processor = AutoProcessor.from_pretrained(model_directory)
-        # model = Blip2ForConditionalGeneration.from_pretrained(model_directory, torch_dtype=torch.float16)
-
+# checking gpu availability
         device = "cuda" if torch.cuda.is_available() else "cpu"
         print("Warning: CUDA is not available. Running on CPU.") if not torch.cuda.is_available() else None
         model.to(device)
