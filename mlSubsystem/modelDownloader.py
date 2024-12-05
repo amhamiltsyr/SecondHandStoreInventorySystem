@@ -5,9 +5,6 @@ import configreader
 from transformers import AutoProcessor, Blip2ForConditionalGeneration
 
 
-from transformers import AutoProcessor, Blip2ForConditionalGeneration
-
-
 def main():
     #region Read Configuration
     try:
